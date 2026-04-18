@@ -1,65 +1,41 @@
 # claude-bedrock-setup
 
-One-command CLI to configure [Claude Code](https://claude.ai/code) with [Amazon Bedrock](https://aws.amazon.com/bedrock/) for your engineering team.
+One-command CLI to configure [Claude Code](https://claude.ai/code) with [Amazon Bedrock](https://aws.amazon.com/bedrock/).
 
 ## Usage
 
-No installation required — run with `npx`:
-
 ```bash
-npx claude-bedrock-setup
+npx @huyjack178/claude-bedrock-setup
 ```
 
-Or install globally once and run anywhere:
+Or install globally:
 
 ```bash
-npm install -g claude-bedrock-setup
+npm install -g @huyjack178/claude-bedrock-setup
 claude-bedrock-setup
 ```
+
+> **Note:** This package is hosted on GitHub Packages. Add the following to your `~/.npmrc` before installing:
+> ```
+> @huyjack178:registry=https://npm.pkg.github.com
+> ```
 
 ## What it does
 
 1. Checks Claude Code CLI is installed (≥ v2.1.94)
-2. Detects existing AWS credentials — or prompts for them
-3. Asks for preferred AWS region (default: `us-east-1`)
-4. Verifies Anthropic inference profiles are available in your account
-5. Writes `~/.claude/settings.json` with Bedrock enabled and models pinned
-6. Runs an optional smoke test to confirm the connection works
+2. Asks for your preferred AWS region (default: `us-east-1`)
+3. Prompts for a Bedrock API key
+4. Writes `~/.claude/settings.json` with Bedrock enabled and models pinned
+5. Optionally runs a smoke test to confirm the connection works
+6. Optionally enables CloudWatch invocation logging for usage monitoring
 
 ## Prerequisites
 
 | Requirement | Notes |
 |---|---|
 | [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) v2.1.94+ | `npm install -g @anthropic-ai/claude-code` |
-| AWS account with Bedrock access | Enable Anthropic models in [Model catalog](https://console.aws.amazon.com/bedrock/) |
+| AWS account with Bedrock access | Enable Anthropic models in the [Model catalog](https://console.aws.amazon.com/bedrock/) |
 | Node.js ≥ 18 | Required to run this CLI |
-
-## IAM permissions
-
-Your AWS identity needs the policy in [iam-policy.json](iam-policy.json):
-
-```bash
-aws iam create-policy \
-  --policy-name ClaudeCodeBedrockPolicy \
-  --policy-document file://iam-policy.json
-
-aws iam attach-user-policy \
-  --user-name <YOUR_IAM_USER> \
-  --policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/ClaudeCodeBedrockPolicy
-```
-
-## Auth methods supported
-
-| Method | How |
-|---|---|
-| **Bedrock API key** *(recommended)* | Prompted interactively or pre-set as `AWS_BEARER_TOKEN_BEDROCK` — no AWS CLI needed |
-| Access Key ID + Secret | Prompted interactively or pre-set as `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` |
-| AWS SSO profile | `AWS_PROFILE` — run `aws sso login` first |
-| Existing AWS CLI credentials | Auto-detected from `~/.aws` |
-
-### Getting a Bedrock API key
-
-In the [Amazon Bedrock console](https://console.aws.amazon.com/bedrock/) go to **API keys** → **Create API key**. No AWS CLI or IAM user required on the engineer's machine.
 
 ## Settings written
 
@@ -77,18 +53,16 @@ After setup, `~/.claude/settings.json` will contain:
 }
 ```
 
-## Monitoring & Usage Dashboard
+## Monitoring
 
 During setup you can opt in to **Bedrock model invocation logging**. This creates:
 
 - An IAM role (`BedrockInvocationLoggingRole`) that Bedrock uses to write logs
-- A CloudWatch log group `/aws/bedrock/model-invocations` with every request's token counts, latency, and model ID
+- A CloudWatch log group `/aws/bedrock/model-invocations` with token counts, latency, and model ID per request
 
-Once logging is enabled, use **CloudWatch Metrics** (namespace `AWS/Bedrock`) to track `InputTokenCount`, `OutputTokenCount`, `InvocationLatency`, and errors per model. Bedrock spend also appears in **AWS Cost Explorer** under service `Amazon Bedrock`.
+Once enabled, use **CloudWatch Metrics** (namespace `AWS/Bedrock`) to track usage and costs. Bedrock spend also appears in **AWS Cost Explorer** under service `Amazon Bedrock`.
 
 ## References
 
-- [Claude Code on Amazon Bedrock — Docs](https://code.claude.com/docs/en/amazon-bedrock)
+- [Claude Code on Amazon Bedrock](https://code.claude.com/docs/en/amazon-bedrock)
 - [Bedrock inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html)
-- [Bedrock IAM reference](https://docs.aws.amazon.com/bedrock/latest/userguide/security-iam.html)
-# claudecode-bedrock
