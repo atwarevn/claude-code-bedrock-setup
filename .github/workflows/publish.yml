@@ -44,8 +44,3 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.version }}
           generate_release_notes: true
-
-      - name: Publish to GitHub Packages
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
