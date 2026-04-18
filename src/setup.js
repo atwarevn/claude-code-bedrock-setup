@@ -90,17 +90,13 @@ if (currentKey) {
 }
 
 // 4. Write ~/.claude/settings.json
-const regionPrefix = region.startsWith('eu') ? 'eu'
-                   : region.startsWith('ap') ? 'ap'
-                   : 'us';
-
 const envBlock = {
-  CLAUDE_CODE_USE_BEDROCK:         '1',
-  AWS_REGION:                       region,
+  CLAUDE_CODE_USE_BEDROCK: '1',
+  AWS_REGION: region,
   ...(bedrockKey && { AWS_BEARER_TOKEN_BEDROCK: bedrockKey }),
-  ANTHROPIC_DEFAULT_SONNET_MODEL:  `${regionPrefix}.anthropic.claude-sonnet-4-6`,
-  ANTHROPIC_DEFAULT_HAIKU_MODEL:   `${regionPrefix}.anthropic.claude-haiku-4-5-20251001-v1:0`,
-  ANTHROPIC_DEFAULT_OPUS_MODEL:    `${regionPrefix}.anthropic.claude-opus-4-6`,
+  ANTHROPIC_DEFAULT_SONNET_MODEL: `global.anthropic.claude-sonnet-4-6`,
+  ANTHROPIC_DEFAULT_HAIKU_MODEL: `global.anthropic.claude-haiku-4-5-20251001-v1:0`,
+  ANTHROPIC_DEFAULT_OPUS_MODEL: `global.anthropic.claude-opus-4-6-v1`,
 };
 
 mkdirSync(dirname(settingsPath), { recursive: true });
