@@ -91,3 +91,4 @@ Once logging is enabled, use **CloudWatch Metrics** (namespace `AWS/Bedrock`) to
 - [Claude Code on Amazon Bedrock — Docs](https://code.claude.com/docs/en/amazon-bedrock)
 - [Bedrock inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html)
 - [Bedrock IAM reference](https://docs.aws.amazon.com/bedrock/latest/userguide/security-iam.html)
+# claudecode-bedrock
