@@ -1,32 +1,51 @@
 # claude-code-bedrock-setup
 
-One-command CLI to configure [Claude Code](https://claude.ai/code) with [Amazon Bedrock](https://aws.amazon.com/bedrock/).
+One-command CLI to configure [Claude Code](https://claude.ai/code) to use a custom API Gateway (e.g. LiteLLM proxy in front of Amazon Bedrock).
 
-## Usage
+## Setup
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/huyjack178/claudecode-bedrock/refs/heads/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/atwarevn/claude-code-bedrock-setup/refs/heads/main/install.sh | sh
 ```
 
 No installation required — just run the command above. Node.js ≥ 18 must be installed on your machine.
 
-## What it does
+## Cleanup
+
+To remove all gateway configuration from `~/.claude/settings.json` and your shell profile:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/atwarevn/claude-code-bedrock-setup/refs/heads/main/cleanup.sh | sh
+```
+
+Or if you installed via npm:
+
+```bash
+claude-bedrock-setup --cleanup
+```
+
+## What setup does
 
 1. Checks Claude Code CLI is installed (≥ v2.1.94)
-2. Asks for your preferred AWS region (default: `us-east-1`)
-3. Prompts for a Bedrock API key
-4. Writes `~/.claude/settings.json` with Bedrock enabled and models pinned
-5. Adds Bedrock environment variables to your shell profile
-6. Optionally runs a smoke test to confirm the connection works
-7. Optionally enables CloudWatch invocation logging for usage monitoring
+2. Asks for the gateway base URL (default: `http://localhost:4000`)
+3. Prompts for auth — either a static token (`ANTHROPIC_AUTH_TOKEN`) or a helper script path for rotating keys (`apiKeyHelper`)
+4. Writes `~/.claude/settings.json` with gateway env vars and pinned model IDs
+5. Adds environment variable exports to your shell profile (`.zshrc`, `.bashrc`, or `config.fish`)
+6. Optionally runs a smoke test to confirm the gateway connection works
+
+## What cleanup does
+
+1. Removes all gateway and Bedrock env keys from `~/.claude/settings.json`
+2. Removes the `apiKeyHelper` field from `~/.claude/settings.json`
+3. Strips the exported block from `.zshrc`, `.bashrc`, and `config.fish` (whichever exist)
 
 ## Prerequisites
 
 | Requirement | Notes |
 |---|---|
 | [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) v2.1.94+ | `npm install -g @anthropic-ai/claude-code` |
-| AWS account with Bedrock access | Enable Anthropic models in the [Model catalog](https://console.aws.amazon.com/bedrock/) |
 | Node.js ≥ 18 | Required to run this CLI |
+| API Gateway | e.g. LiteLLM proxy — must be running and reachable |
 
 ## Settings written
 
@@ -35,18 +54,33 @@ After setup, `~/.claude/settings.json` will contain:
 ```json
 {
   "env": {
-    "CLAUDE_CODE_USE_BEDROCK": "1",
-    "AWS_REGION": "us-east-1",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-4-6",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "us.anthropic.claude-opus-4-6"
+    "ANTHROPIC_BASE_URL": "http://localhost:4000",
+    "ANTHROPIC_AUTH_TOKEN": "<your-token>",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "1",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-5"
   }
 }
 ```
 
-The region prefix (`us`, `eu`, `ap`) is set automatically based on the region you choose.
+When using a key helper script instead of a static token, `ANTHROPIC_AUTH_TOKEN` is replaced with:
+
+```json
+{
+  "apiKeyHelper": "~/bin/get-litellm-key.sh"
+}
+```
+
+## npm usage
+
+```bash
+npx @huyjack178/claude-bedrock-setup          # interactive setup
+npx @huyjack178/claude-bedrock-setup --cleanup # remove all config
+```
 
 ## References
 
+- [Claude Code custom API](https://docs.anthropic.com/en/docs/claude-code)
+- [LiteLLM proxy](https://docs.litellm.ai/docs/proxy/quick_start)
 - [Claude Code on Amazon Bedrock](https://code.claude.com/docs/en/amazon-bedrock)
-- [Bedrock inference profiles](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html)

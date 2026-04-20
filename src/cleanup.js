@@ -29,6 +29,7 @@ const ask = async (question, defaultVal = '') => {
 const ENV_KEYS = [
   'CLAUDE_CODE_USE_BEDROCK',
   'CLAUDE_CODE_SKIP_BEDROCK_AUTH',
+  'CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS',
   'ANTHROPIC_BASE_URL',
   'ANTHROPIC_AUTH_TOKEN',
   'ANTHROPIC_DEFAULT_SONNET_MODEL',
@@ -89,6 +90,7 @@ if (existsSync(settingsPath)) {
       for (const key of ENV_KEYS) delete settings.env[key];
       if (Object.keys(settings.env).length === 0) delete settings.env;
     }
+    delete settings.apiKeyHelper;
     writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
     success(`Removed env keys from ${settingsPath}`);
   } catch (e) {
