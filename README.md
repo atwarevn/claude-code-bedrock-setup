@@ -7,7 +7,8 @@ One-command CLI to configure [Claude Code](https://claude.ai/code) to use a cust
 ```bash
 curl -fsSL https://raw.githubusercontent.com/atwarevn/claude-code-bedrock-setup/refs/heads/main/install.sh | sh
 ```
-
+- Input proxy url: https://proxy.heyalice.net
+- Input the API key that admin provide you: api_key
 No installation required — just run the command above. Node.js ≥ 18 must be installed on your machine.
 
 ## Cleanup
